@@ -16,7 +16,7 @@ import com.raizlabs.android.dbflow.config.FlowManager;
  *     // use client to send requests to API
  *
  */
-public class TwitterApplication extends Application {
+public class RestApplication extends Application {
 	private static Context context;
 
 	@Override
@@ -26,10 +26,10 @@ public class TwitterApplication extends Application {
 		FlowManager.init(new FlowConfig.Builder(this).build());
 		FlowLog.setMinimumLoggingLevel(FlowLog.Level.V);
 
-		TwitterApplication.context = this;
+		RestApplication.context = this;
 	}
 
 	public static RestClient getRestClient() {
-		return (RestClient) RestClient.getInstance(RestClient.class, TwitterApplication.context);
+		return (RestClient) RestClient.getInstance(RestClient.class, RestApplication.context);
 	}
 }
