@@ -2,6 +2,7 @@ package com.codepath.apps.restclienttemplate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,32 +23,82 @@ import cz.msebera.android.httpclient.Header;
 
 public class TimelineActivity extends AppCompatActivity {
 
+    private final String TAG = getClass().getName();
     private RestClient client;
-    TweetAdapter tweetAdapter;
-    ArrayList<Tweet> tweets;
+    private SwipeRefreshLayout swipeContainer;
+    ArrayList<Tweet> tweets = new ArrayList<>();
+    TweetAdapter tweetAdapter = new TweetAdapter(tweets);
     RecyclerView rvTweets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-
-        client = RestApplication.getRestClient();
-
-        //find recyclerview
         rvTweets = (RecyclerView) findViewById(R.id.rvTweet);
-        //init arraylist (data source)
-        tweets = new ArrayList<>();
-        //construct adapter from datasource
-        tweetAdapter = new TweetAdapter(tweets);
-
         //recyclerview setup (layout manager, use adapter)
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
-
         //set adapter
         rvTweets.setAdapter(tweetAdapter);
 
+
+        client = RestApplication.getRestClient();
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                fetchTimelineAsync(0);
+            }
+        });
         populateTimeline();
+
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+    }
+
+        public void fetchTimelineAsync(int page) {
+            // Send the network request to fetch the updated data
+            // `client` here is an instance of Android Async HTTP
+            // getHomeTimeline is an example endpoint.
+
+            Log.i(TAG, client.toString());
+            client.getHomeTimeline(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                    // Remember to CLEAR OUT old items before appending in the new ones
+                    tweetAdapter.clear();
+                    // s1 clear
+                    tweets.clear();
+                    //  s2 loop thru all json objects in the array, convert each json obj into a Tweet object, put each tweet obj into tweets
+                    for (int i = 0; i < response.length(); i++){
+                        try {
+                            Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
+                            tweets.add(i, tweet);
+                            tweetAdapter.notifyItemInserted(tweets.size() - 1);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    // ...the data has come back, add new items to your adapter...
+                    tweetAdapter.addAll(tweets);
+                    // Now we call setRefreshing(false) to signal refresh has finished
+                    swipeContainer.setRefreshing(false);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                    Log.d("DEBUG", "Fetch timeline error: " + responseString);
+
+                }
+            });
+
     }
 
     // Inflate the menu; this adds items to the action bar if it is present.
