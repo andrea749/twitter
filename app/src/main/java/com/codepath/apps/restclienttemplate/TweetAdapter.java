@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +54,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvUsername.setText(tweet.user.name);
         holder.tvHandle.setText("@" + tweet.user.screenName);
         holder.tvBody.setText(tweet.body);
-        //holder.tvTimeStamp.setText(getRelativeTimeAgo(tweet.user.createdAt));
+        holder.tvTimeStamp.setText(getRelativeTimeAgo(tweet.createdAt));
         Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
 
     }
@@ -85,11 +86,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     // getRelativeTimeAgo("Mon Apr 01 21:16:23 +0000 2014");
     public String getRelativeTimeAgo(String rawJsonDate) {
-        public SimpleDateFormat simpleDateFormat;
-
-        
         String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-         = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
         sf.setLenient(true);
 
         String relativeDate = "";
@@ -103,4 +101,5 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
         return relativeDate;
     }
+
 }
