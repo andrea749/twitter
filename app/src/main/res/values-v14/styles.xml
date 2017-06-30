@@ -6,7 +6,7 @@
         res/values-v11/styles.xml on API 14+ devices.
     -->
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">#0084b4</item>
+        <item name="colorPrimary">@color/twitter_blue</item>
     </style>
 
 </resources>
