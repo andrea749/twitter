@@ -3,8 +3,11 @@ package com.codepath.apps.restclienttemplate;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -16,9 +19,41 @@ import cz.msebera.android.httpclient.Header;
 
 public class ComposeActivity extends AppCompatActivity {
     RestClient client;
+    EditText etTweet;
+    TextView tvCounter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_compose);
+        etTweet = (EditText) findViewById(R.id.etTweet);
+        tvCounter = (TextView) findViewById(R.id.tvCounter);
+        etTweet.addTextChangedListener(mTextEditorWatcher);
+
+    }
+
+    final TextWatcher mTextEditorWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            tvCounter.setText(String.valueOf(140-s.length()));
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+
     public void onSubmit(View v) {
         client = new RestClient(this);
-        EditText etTweet = (EditText) findViewById(R.id.etTweet);
+
+
         // Activity finished ok, return the data
         client.sendTweet(etTweet.getText().toString(), new JsonHttpResponseHandler() {
             @Override
@@ -42,9 +77,11 @@ public class ComposeActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_compose);
-    }
+
+
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_compose);
+//    }
 }
