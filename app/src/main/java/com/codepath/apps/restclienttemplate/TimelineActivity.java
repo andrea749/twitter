@@ -29,6 +29,7 @@ public class TimelineActivity extends AppCompatActivity {
     ArrayList<Tweet> tweets = new ArrayList<>();
     TweetAdapter tweetAdapter = new TweetAdapter(tweets);
     RecyclerView rvTweets;
+    private EndlessScrollListener scrollListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,34 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
         rvTweets = (RecyclerView) findViewById(R.id.rvTweet);
         //recyclerview setup (layout manager, use adapter)
-        rvTweets.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvTweets.setLayoutManager(linearLayoutManager);
         //set adapter
         rvTweets.setAdapter(tweetAdapter);
-
-
         client = RestApplication.getRestClient();
+        populateTimeline();
+
+        //retain instance so that you can call 'resetState()' for fresh searches
+        scrollListener = new EndlessScrollListener(linearLayoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                //triggered only when new data needs to be appended to list
+                //List<Tweet> moreTweets = new ArrayList<>();
+                //int curSize = tweetAdapter.getItemCount();
+                //add whatever code is needed to append new items to bottom of list -- TODO
+                Long maxId = tweets.get(tweets.size() -1).uid;
+                loadNextDataFromApi(maxId);
+            }
+        };
+
+
+        //adds scroll listener to Recyclerview
+        rvTweets.addOnScrollListener(scrollListener);
+
+
+//        client = RestApplication.getRestClient();
+//        populateTimeline();
+
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -50,15 +73,42 @@ public class TimelineActivity extends AppCompatActivity {
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 fetchTimelineAsync(0);
+
             }
         });
-        populateTimeline();
 
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+    }
+
+    public void loadNextDataFromApi(Long maxId) {
+        //send API request to retrieve paginated data
+        client.getNextTweets(maxId, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
+                        tweets.add(tweet);
+                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
+        // send request including offset value (page) as query parameter
+        //deserialize(/deparcel?) and construct new model objects from api response
+        //append new data objects to existing set inside array
+        //notify adapter of new items with notifyItemRangeInserted()
     }
 
         public void fetchTimelineAsync(int page) {
@@ -78,7 +128,7 @@ public class TimelineActivity extends AppCompatActivity {
                     for (int i = 0; i < response.length(); i++){
                         try {
                             Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
-                            tweets.add(i, tweet);
+                            tweets.add(tweet);
                             tweetAdapter.notifyItemInserted(tweets.size() - 1);
 
                         } catch (JSONException e) {
@@ -86,7 +136,6 @@ public class TimelineActivity extends AppCompatActivity {
                         }
                     }
                     // ...the data has come back, add new items to your adapter...
-                    tweetAdapter.addAll(tweets);
                     // Now we call setRefreshing(false) to signal refresh has finished
                     swipeContainer.setRefreshing(false);
                 }
@@ -95,6 +144,7 @@ public class TimelineActivity extends AppCompatActivity {
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     super.onFailure(statusCode, headers, responseString, throwable);
                     Log.d("DEBUG", "Fetch timeline error: " + responseString);
+                    swipeContainer.setRefreshing(false);
 
                 }
             });
@@ -108,10 +158,6 @@ public class TimelineActivity extends AppCompatActivity {
         return true;
     }
 
-//    public void onComposeAction(MenuItem mi) {
-//        Intent i = new Intent(TimelineActivity.this, ComposeActivity.class);
-//        startActivity(i);
-//    }
 
     private final int REQUEST_CODE = 20;
     // FirstActivity, launching an activity for a result
@@ -161,6 +207,7 @@ public class TimelineActivity extends AppCompatActivity {
                         Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
                         tweets.add(tweet);
                         tweetAdapter.notifyItemInserted(tweets.size() - 1);
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();

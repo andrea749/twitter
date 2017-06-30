@@ -6,12 +6,11 @@
         android:id="@+id/miCompose"
         android:icon="@drawable/vector_compose_fab"
         android:onClick="onComposeAction"
-        app:showAsAction="ifRoom"
-        android:title="Compose" />
+        android:title="Compose"
+        app:showAsAction="always" />
     <item
         android:id="@+id/miProfile"
         android:icon="@drawable/ic_vector_person_stroke"
-        app:showAsAction="ifRoom|withText"
-        android:title="Profile">
-    </item>
+        android:title="Profile"
+        app:showAsAction="always"></item>
 </menu>
