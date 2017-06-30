@@ -52,7 +52,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![Walkthrough](TwitterGIF.mp4)
+![Walkthrough](TwitterGIF.gif)
 
 GIF created with [Recordit.co](http://recordit.co).
 
