@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:label="Twitter">
 
     <item
         android:id="@+id/miTwitter"
@@ -15,7 +16,8 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/miProfile"
-        android:icon="@drawable/ic_vector_person_stroke"
+        android:icon="@drawable/ic_person_white_24dp"
+        android:onClick="onProfileView"
         android:title="Profile"
         app:showAsAction="always"></item>
 </menu>

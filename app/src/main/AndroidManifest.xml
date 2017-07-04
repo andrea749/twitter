@@ -11,7 +11,7 @@
         android:name=".RestApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher_twitter"
-        android:label=""
+        android:label="Twitter"
         android:theme="@style/AppTheme">
         <activity
             android:name=".LoginActivity"
@@ -33,11 +33,14 @@
                     android:scheme="@string/intent_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".TimelineActivity"
+        <activity
+            android:name=".TimelineActivity"
             android:icon="@drawable/ic_launcher_twitter"
-            android:label=""/>
-        <activity android:name=".ComposeActivity"
-            android:label="Compose Tweet"></activity>
+            android:label="" />
+        <activity
+            android:name=".ComposeActivity"
+            android:label="Compose Tweet" />
+        <activity android:name=".ProfileActivity"></activity>
     </application>
 
 </manifest>
