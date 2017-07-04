@@ -23,9 +23,16 @@ import java.util.Locale;
 public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> {
     private List<Tweet> mTweets;
     Context context;
+    private TweetAdapterListener mListener;
+    //define an interface required by viewholder
+    public interface TweetAdapterListener {
+        public void onItemSelected(View view, int position);
+    }
+
     //pass in Tweets array in constructor
-    public TweetAdapter(List<Tweet> tweets) {
+    public TweetAdapter(List<Tweet> tweets, TweetAdapterListener listener) {
         mTweets = tweets;
+        mListener = listener;
 
     }
     // Clean all elements of the recycler
@@ -74,7 +81,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         return mTweets.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivProfileImage;
         public TextView tvUsername;
         public TextView tvBody;
@@ -91,6 +98,18 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvHandle = (TextView) itemView.findViewById(R.id.tvHandle);
             tvTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
+
+            //handle row click event
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mListener != null);
+                    //get position of row element
+                    int position = getAdapterPosition();
+                    //fire listener callback only if listener isnt null
+                    mListener.onItemSelected(view, position);
+                }
+            });
         }
     }
 

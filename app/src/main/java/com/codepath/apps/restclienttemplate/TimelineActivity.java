@@ -8,27 +8,28 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.codepath.apps.restclienttemplate.fragments.TweetsListFragment;
 import com.codepath.apps.restclienttemplate.fragments.TweetsPagerAdapter;
 
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
-public class TimelineActivity extends AppCompatActivity {
+public class TimelineActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
     ArrayList<Tweet> tweets = new ArrayList<>();
 
     private final String TAG = getClass().getName();
 //    private RestClient client;
     private SwipeRefreshLayout swipeContainer;
     private EndlessScrollListener scrollListener;
-    TweetAdapter tweetAdapter = new TweetAdapter(tweets);
+    TweetAdapter tweetAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timeline);
-
         //get the view pager
         ViewPager vpPager = (ViewPager) findViewById(R.id.viewpager);
         //set adapter for pager
@@ -174,5 +175,10 @@ public class TimelineActivity extends AppCompatActivity {
 
         Intent i = new Intent(this, ProfileActivity.class);
         startActivity(i);
+    }
+
+    @Override
+    public void onTweetSelected(Tweet tweet) {
+        Toast.makeText(this, tweet.body, Toast.LENGTH_SHORT).show();
     }
 }

@@ -29,11 +29,16 @@ import cz.msebera.android.httpclient.Header;
  * Created by andreagarcia on 7/3/17.
  */
 
-public class TweetsListFragment extends Fragment {
+public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetAdapterListener {
+
+    public interface TweetSelectedListener {
+        //handle tweet selection
+        public void onTweetSelected(Tweet tweet);
+    }
     private SwipeRefreshLayout swipeContainer;
     private EndlessScrollListener scrollListener;
     ArrayList<Tweet> tweets = new ArrayList<>();
-    TweetAdapter tweetAdapter = new TweetAdapter(tweets);
+    TweetAdapter tweetAdapter;
     RecyclerView rvTweets;
     private RestClient client;
 
@@ -46,6 +51,7 @@ public class TweetsListFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragments_tweets_list, container, false);
 
         rvTweets = (RecyclerView) v.findViewById(R.id.rvTweet);
+        tweetAdapter = new TweetAdapter(tweets, this);
         //recyclerview setup (layout manager, use adapter)
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvTweets.setLayoutManager(linearLayoutManager);
@@ -153,5 +159,13 @@ public class TweetsListFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void onItemSelected(View view, int position) {
+        Tweet tweet = tweets.get(position);
+        //getContext() because inside fragment
+        //fragment can call back on activity through getActivity()
+        ((TweetSelectedListener) getActivity()).onTweetSelected(tweet);
     }
 }
