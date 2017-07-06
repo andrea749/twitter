@@ -1,12 +1,13 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.codepath.apps.restclienttemplate.fragments.TweetsListFragment;
 import com.codepath.apps.restclienttemplate.fragments.UserTimelineFragment;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -15,7 +16,7 @@ import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
 
     RestClient client;
     @Override
@@ -28,7 +29,6 @@ public class ProfileActivity extends AppCompatActivity {
         UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
         //display user timeline fragment inside container (dynamically because we are passing in a screen name)
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
         //make change
         ft.replace(R.id.flContainer, userTimelineFragment);
         //commit it
@@ -69,5 +69,10 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    public void onTweetSelected(Tweet tweet) {
+        //implement code for selecting tweet on profile -- lead bac to profile probably
     }
 }

@@ -35,7 +35,7 @@ public class ComposeActivity extends AppCompatActivity {
     final TextWatcher mTextEditorWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            tvCounter.setText(String.valueOf(140));
         }
 
         @Override

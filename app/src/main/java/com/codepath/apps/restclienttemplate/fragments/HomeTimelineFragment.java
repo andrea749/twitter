@@ -42,6 +42,18 @@ public class HomeTimelineFragment extends TweetsListFragment {
 //            }
 //        });
 //
+//        rvTweets.addOnScrollListener(scrollListener);/retain instance so that you can call 'resetState()' for fresh searches
+//        scrollListener = new EndlessScrollListener(new LinearLayoutManager() {
+//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+//                //triggered only when new data needs to be appended to list
+//                //List<Tweet> moreTweets = new ArrayList<>();
+//                //int curSize = tweetAdapter.getItemCount();
+//                //add whatever code is needed to append new items to bottom of list -- TODO
+//                Long maxId = tweets.get(tweets.size() -1).uid;
+//                loadNextDataFromApi(maxId);
+//            }
+//        });
+//
 //        rvTweets.addOnScrollListener(scrollListener);
 
 

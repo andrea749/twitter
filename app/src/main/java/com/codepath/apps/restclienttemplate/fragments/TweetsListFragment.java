@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.codepath.apps.restclienttemplate.EndlessScrollListener;
 import com.codepath.apps.restclienttemplate.R;
+import com.codepath.apps.restclienttemplate.RestApplication;
 import com.codepath.apps.restclienttemplate.RestClient;
 import com.codepath.apps.restclienttemplate.Tweet;
 import com.codepath.apps.restclienttemplate.TweetAdapter;
@@ -49,6 +50,8 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //inflate layout
         View v = inflater.inflate(R.layout.fragments_tweets_list, container, false);
+        //client = new RestClient(getContext());
+        client = RestApplication.getRestClient();
 
         rvTweets = (RecyclerView) v.findViewById(R.id.rvTweet);
         tweetAdapter = new TweetAdapter(tweets, this);
@@ -57,6 +60,20 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
         rvTweets.setLayoutManager(linearLayoutManager);
         //set adapter
         rvTweets.setAdapter(tweetAdapter);
+
+        //retain instance so that you can call 'resetState()' for fresh searches
+        scrollListener = new EndlessScrollListener(linearLayoutManager) {
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                //triggered only when new data needs to be appended to list
+                //List<Tweet> moreTweets = new ArrayList<>();
+                //int curSize = tweetAdapter.getItemCount();
+                //add whatever code is needed to append new items to bottom of list -- TODO
+                Long maxId = tweets.get(tweets.size() -1).uid;
+                loadNextDataFromApi(maxId);
+            }
+        };
+
+        rvTweets.addOnScrollListener(scrollListener);//retain instance so that you can call 'resetState()' for fresh searches
 
         swipeContainer = (SwipeRefreshLayout) v.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -82,25 +99,25 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
 
     public void loadNextDataFromApi(Long maxId) {
         //send API request to retrieve paginated data
-        client.getNextTweets(maxId, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
-                        tweets.add(tweet);
-                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                super.onFailure(statusCode, headers, responseString, throwable);
-            }
-        });
+//        client.getNextTweets(maxId, new JsonHttpResponseHandler(){
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+//                for (int i = 0; i < response.length(); i++) {
+//                    try {
+//                        Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
+//                        tweets.add(tweet);
+//                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//                super.onFailure(statusCode, headers, responseString, throwable);
+//            }
+//        });
 
     }
 
@@ -167,5 +184,12 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
         //getContext() because inside fragment
         //fragment can call back on activity through getActivity()
         ((TweetSelectedListener) getActivity()).onTweetSelected(tweet);
+    }
+
+    public void onNewTweetAvailable(Tweet tweet){
+        //this is step 5
+        tweets.add(0, tweet);
+        tweetAdapter.notifyItemInserted(0);
+        rvTweets.scrollToPosition(0);
     }
 }
