@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+
+import org.parceler.Parcels;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,7 +27,11 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     private List<Tweet> mTweets;
     Context context;
     private TweetAdapterListener mListener;
+    Tweet tweet;
     //define an interface required by viewholder
+
+
+
     public interface TweetAdapterListener {
         public void onItemSelected(View view, int position);
     }
@@ -65,7 +72,7 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         //get data according to position
-        Tweet tweet = mTweets.get(position);
+        tweet = mTweets.get(position);
 
         //populate views according to data -- currently username and body, later use glide for rest
         holder.tvUsername.setText(tweet.user.name);
@@ -98,6 +105,17 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvHandle = (TextView) itemView.findViewById(R.id.tvHandle);
             tvTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
+
+            ivProfileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    Intent i = new Intent(context, ProfileActivity.class);
+                    //i.putExtra("user", Parcels.wrap(tweet.user));
+                    i.putExtra("user", Parcels.wrap(mTweets.get(position).user));
+                    context.startActivity(i);
+                }
+            });
 
             //handle row click event
             itemView.setOnClickListener(new View.OnClickListener() {

@@ -19,6 +19,7 @@ public class Tweet {
     public String createdAt;
     public SimpleDateFormat simpleDateFormat;
     public Tweet tweet;
+    public String screenName;
 
     //deserialize JSON
     public static Tweet fromJSON(JSONObject jsonObject) throws JSONException{

@@ -13,18 +13,26 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import cz.msebera.android.httpclient.Header;
 
 public class ProfileActivity extends AppCompatActivity implements TweetsListFragment.TweetSelectedListener {
 
     RestClient client;
+    String screenName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        final String screenName = getIntent().getStringExtra("screen_name");
+        final User otherUser = Parcels.unwrap(getIntent().getParcelableExtra("user"));
+
+        if (otherUser != null) {
+            screenName = otherUser.screenName;
+        } else {
+            screenName = getIntent().getStringExtra("screen_name");
+        }
         //create user fragment
         UserTimelineFragment userTimelineFragment = UserTimelineFragment.newInstance(screenName);
         //display user timeline fragment inside container (dynamically because we are passing in a screen name)
@@ -34,22 +42,37 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
         //commit it
         ft.commit();
 
-        client = RestApplication.getRestClient();
-        client.getUserInfo(new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //deserialize user object
-                try {
-                    User user = User.fromJSON(response);
+        if (otherUser != null) {
+            client = RestApplication.getRestClient();
+            client.getUserInfo(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    //deserialize user object
+                    //User user = User.fromJSON(response);
                     //set title of actionbar based on user info
-                    getSupportActionBar().setTitle(user.screenName);
+                    getSupportActionBar().setTitle(otherUser.screenName);
                     //populate user headline
-                    populateUserHeadline(user);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    populateUserHeadline(otherUser);
                 }
-            }
-        });
+            });
+        } else {
+            client = RestApplication.getRestClient();
+            client.getUserInfo(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    //deserialize user object
+                    try {
+                        User user = User.fromJSON(response);
+                        //set title of actionbar based on user info
+                        getSupportActionBar().setTitle(user.screenName);
+                        //populate user headline
+                        populateUserHeadline(user);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 
     public void populateUserHeadline(User user) {
@@ -73,6 +96,6 @@ public class ProfileActivity extends AppCompatActivity implements TweetsListFrag
 
     @Override
     public void onTweetSelected(Tweet tweet) {
-        //implement code for selecting tweet on profile -- lead bac to profile probably
+        //implement code for selecting tweet on profile -- lead back to profile probably
     }
 }

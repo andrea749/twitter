@@ -36,7 +36,7 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
         //handle tweet selection
         public void onTweetSelected(Tweet tweet);
     }
-    private SwipeRefreshLayout swipeContainer;
+    public SwipeRefreshLayout swipeContainer;
     private EndlessScrollListener scrollListener;
     ArrayList<Tweet> tweets = new ArrayList<>();
     TweetAdapter tweetAdapter;
@@ -64,12 +64,8 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
         //retain instance so that you can call 'resetState()' for fresh searches
         scrollListener = new EndlessScrollListener(linearLayoutManager) {
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                //triggered only when new data needs to be appended to list
-                //List<Tweet> moreTweets = new ArrayList<>();
-                //int curSize = tweetAdapter.getItemCount();
-                //add whatever code is needed to append new items to bottom of list -- TODO
                 Long maxId = tweets.get(tweets.size() -1).uid;
-                loadNextDataFromApi(maxId);
+                //loadNextDataFromApi(maxId);
             }
         };
 
@@ -79,11 +75,7 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
                 fetchTimelineAsync(0);
-
             }
         });
 
@@ -96,29 +88,27 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
 
     }
 
-
     public void loadNextDataFromApi(Long maxId) {
         //send API request to retrieve paginated data
-//        client.getNextTweets(maxId, new JsonHttpResponseHandler(){
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-//                for (int i = 0; i < response.length(); i++) {
-//                    try {
-//                        Tweet tweet = Tweet.fromJSON(response.getJSONObject(i));
-//                        tweets.add(tweet);
-//                        tweetAdapter.notifyItemInserted(tweets.size() - 1);
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//                super.onFailure(statusCode, headers, responseString, throwable);
-//            }
-//        });
-
+        client.getNextTweets(maxId, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                for (int i = 0; i < response.length(); i++) {
+                    Tweet tweet = null;
+                    try {
+                        tweet = Tweet.fromJSON(response.getJSONObject(i));
+                        tweets.add(tweet);
+                        tweetAdapter.notifyItemInserted(tweets.size() -1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                super.onFailure(statusCode, headers, responseString, throwable);
+            }
+        });
     }
 
     public void fetchTimelineAsync(int page) {
@@ -126,7 +116,6 @@ public class TweetsListFragment extends Fragment implements  TweetAdapter.TweetA
         // `client` here is an instance of Android Async HTTP
         // getHomeTimeline is an example endpoint.
 
-//        Log.i(TAG, client.toString());
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
