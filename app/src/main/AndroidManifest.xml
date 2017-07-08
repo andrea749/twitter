@@ -40,7 +40,11 @@
         <activity
             android:name=".ComposeActivity"
             android:label="Compose Tweet" />
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity" />
+        <activity
+            android:name=".ResponseActivity"
+            android:label="Reply Tweet"></activity>
+        <activity android:name=".TweetDetailActivity"></activity>
     </application>
 
 </manifest>

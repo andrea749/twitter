@@ -1,5 +1,6 @@
 package com.codepath.apps.restclienttemplate;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +8,7 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -79,6 +81,8 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
         holder.tvHandle.setText("@" + tweet.user.screenName);
         holder.tvBody.setText(tweet.body);
         holder.tvTimeStamp.setText(getRelativeTimeAgo(tweet.createdAt));
+        holder.tvRetweet.setText(Integer.toString(tweet.retweetCount));
+        holder.tvLike.setText(Integer.toString(tweet.favoriteCount));
         Glide.with(context).load(tweet.user.profileImageUrl).into(holder.ivProfileImage);
 
     }
@@ -90,10 +94,14 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView ivProfileImage;
+        public ImageButton ibComment;
         public TextView tvUsername;
         public TextView tvBody;
         public TextView tvHandle;
         public TextView tvTimeStamp;
+        public TextView tvLike;
+        public TextView tvRetweet;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -101,17 +109,29 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
             //perform findViewById lookups
 
             ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
+            ibComment = (ImageButton) itemView.findViewById(R.id.ibComment);
             tvUsername = (TextView) itemView.findViewById(R.id.tvUserName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvHandle = (TextView) itemView.findViewById(R.id.tvHandle);
             tvTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
+            tvRetweet = (TextView) itemView.findViewById(R.id.tvRetweet);
+            tvLike = (TextView) itemView.findViewById(R.id.tvLike);
+
+            tvBody.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    Intent i = new Intent(context, TweetDetailActivity.class);
+                    i.putExtra("tweet", Parcels.wrap(mTweets.get(position)));
+                    context.startActivity(i);
+                }
+            });
 
             ivProfileImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
                     Intent i = new Intent(context, ProfileActivity.class);
-                    //i.putExtra("user", Parcels.wrap(tweet.user));
                     i.putExtra("user", Parcels.wrap(mTweets.get(position).user));
                     context.startActivity(i);
                 }
@@ -128,6 +148,19 @@ public class TweetAdapter extends RecyclerView.Adapter<TweetAdapter.ViewHolder> 
                     mListener.onItemSelected(view, position);
                 }
             });
+
+            // FirstActivity, launching an activity for a result
+            final int REQUEST_CODE = 20;
+            ibComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public  void onClick(View view) {
+                    int position = getAdapterPosition();
+                    Intent i = new Intent(context, ResponseActivity.class);
+                    i.putExtra("tweet", Parcels.wrap(mTweets.get(position)));
+                    ((Activity) context).startActivityForResult(i, REQUEST_CODE);
+                }
+            });
+
         }
     }
 

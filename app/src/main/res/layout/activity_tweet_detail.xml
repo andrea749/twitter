@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.codepath.apps.restclienttemplate.TweetDetailActivity">
+
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="17dp"
+        app:srcCompat="@android:color/background_dark"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivProfile"
+        android:layout_marginStart="18dp"
+        android:layout_toEndOf="@+id/ivProfile"
+        android:text="TextView"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/tvName"
+        android:layout_below="@+id/tvName"
+        android:text="TextView"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/tvBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/ivProfile"
+        android:layout_below="@+id/ivProfile"
+        android:layout_marginTop="19dp"
+        android:text="TextView"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvTimeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/tvBody"
+        android:layout_below="@+id/tvBody"
+        android:layout_marginTop="23dp"
+        android:text="TextView" />
+
+
+    <ImageButton
+        android:id="@+id/ibComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        android:background="@null"
+        app:srcCompat="@drawable/speech_bubble"
+        android:layout_below="@+id/tvTimeStamp"
+        android:layout_alignEnd="@+id/ivProfile" />
+
+    <ImageButton
+        android:id="@+id/ibRetweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_vector_retweet"
+        android:background="@null"
+        android:layout_alignTop="@+id/ibComment"
+        android:layout_alignStart="@+id/tvHandle"
+        android:layout_marginStart="46dp" />
+
+    <ImageButton
+        android:id="@+id/ibFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_vector_heart_stroke"
+        android:background="@null"
+        android:layout_marginEnd="51dp"
+        android:layout_alignTop="@+id/ibRetweet"
+        android:layout_toStartOf="@+id/ibMessage" />
+
+    <ImageButton
+        android:id="@+id/ibMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/ibFavorite"
+        android:layout_marginEnd="52dp"
+        android:background="@null"
+        app:srcCompat="@drawable/ic_vector_messages_stroke" />
+</RelativeLayout>

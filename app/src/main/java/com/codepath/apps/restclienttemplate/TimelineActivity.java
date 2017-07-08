@@ -60,7 +60,6 @@ public class TimelineActivity extends AppCompatActivity implements TweetsListFra
 
             TweetsPagerAdapter pagerAdapter = (TweetsPagerAdapter) vpPager.getAdapter();
             pagerAdapter.tweetsList.get(0).onNewTweetAvailable(tweet);
-
         }
     }
 
